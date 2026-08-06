@@ -1,0 +1,124 @@
+# syntax=docker/dockerfile:1.7
+
+# Dockerfile for base SVEA image
+#
+# Author: Kaj Munhoz Arfvidsson
+
+ARG BUILD_TAG
+ARG ROSDISTRO
+ARG WORKSPACE
+
+#####################
+## SVEA BASE IMAGE ##
+#####################
+
+FROM ${BUILD_TAG:-ros:latest}
+
+ARG ROSDISTRO
+ARG WORKSPACE
+ARG DEBIAN_FRONTEND=noninteractive
+
+ENV ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+
+## Install dependencies from apt-get
+
+RUN apt-get update -y && \
+    apt-get install --no-install-recommends -y \
+        apt-utils lsb-release \
+        build-essential cmake \
+        git vim nano curl iputils-ping \
+        python3-pip \
+        python3-rosdep \
+        python3-colcon-common-extensions \
+        ros-$ROSDISTRO-mavros \
+        ros-$ROSDISTRO-mavros-extras \
+        && \
+    rm -rf /var/lib/apt/lists/*
+
+## Dependencies and SVEA Base Workspace
+
+# Install SVEA dependencies, but not SVEA packages themselves
+# SVEA packages are deferred to the final build stage.
+RUN --mount=type=bind,source=./src,target=/tmp/src,readonly \
+    apt-get update -y && \
+    rosdep update \
+        --rosdistro $ROSDISTRO \
+        && \
+    rosdep install \
+        --rosdistro $ROSDISTRO \
+        --from-paths /tmp/src \
+        --ignore-src \
+        -qry \
+        && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install pip packages specified in requirements.txt
+RUN --mount=type=bind,source=./requirements.txt,target=/tmp/requirements.txt,readonly \
+    pip install \
+        --break-system-packages \
+        -r /tmp/requirements.txt
+
+# Build /opt/svea workspace
+# Contains misc. dependencies.
+RUN /bin/bash <<EOF
+set -e
+apt-get update -y
+
+# Make a temporary workspace
+pushd $(mktemp -d)
+pwd > /tmp/ws_name
+mkdir src
+
+source /opt/ros/$ROSDISTRO/setup.bash
+
+# Zenoh (system-wide installation)
+echo "deb [trusted=yes] https://download.eclipse.org/zenoh/debian-repo/ /" | tee -a /etc/apt/sources.list > /dev/null
+apt-get update -y
+apt-get install --no-install-recommends -y zenoh-bridge-ros2dds
+
+# MAVROS dependency
+ros2 run mavros install_geographiclib_datasets.sh
+
+cd ./src
+
+# PX4 message definitions
+git clone -b v1.16.1 --depth 1 https://github.com/PX4/px4_msgs.git
+
+# Better Launch
+git clone -b v1.6.0 https://github.com/dfki-ric/better_launch.git
+
+# Motion capture driver
+git clone --depth 1 --recursive https://github.com/DISCOWER/motion_capture_system.git
+
+cd ../
+rosdep update --rosdistro $ROSDISTRO
+rosdep install --rosdistro $ROSDISTRO --from-paths src --ignore-src -qry
+colcon build --merge-install --install-base /opt/svea/$ROSDISTRO
+
+popd
+rm -rf $(cat /tmp/ws_name) /tmp/ws_name
+rm -rf /var/lib/apt/lists/*
+EOF
+
+## Initialize Workspace
+
+WORKDIR $WORKSPACE
+
+COPY entrypoint ./
+
+RUN /bin/bash <<EOF
+set -e
+mkdir src
+source /opt/svea/$ROSDISTRO/setup.bash
+colcon build --symlink-install
+echo "source $WORKSPACE/install/setup.bash" >> /etc/bash.bashrc
+EOF
+
+## Container Entrypoint and Default Command
+
+# For fixing WSL error. TODO: investigate further
+RUN chmod +x ./entrypoint
+
+ENTRYPOINT ["./entrypoint"]
+
+CMD ["bash"]

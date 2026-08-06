@@ -1,0 +1,24 @@
+# Linux
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+**/__pycache__/
+**/*.pyc
+
+# mkdocs
+venv/
+site/
+

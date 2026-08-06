@@ -1,0 +1,45 @@
+#! /bin/sh
+#
+# Create and start (run) a container.
+#
+# The container will be privileged and share the host network.
+#
+# Author: Kaj Munhoz Arfvidsson
+
+. "$(dirname "$0")/config.sh"
+
+CMD="docker run"
+ARGS="$@"
+
+# Default docker arguments
+if isempty ARGS; then
+    ARGS="--name $CONTAINER_NAME"
+fi
+
+# Other docker arguments
+append ARGS \
+    -it \
+    -v "$SHARED_VOLUME" \
+    -e "TERM=xterm-256color" \
+    --rm
+
+# Enable device access for non-dev / non-macOS hosts
+if ! (istrue DEV || is_darwin); then
+    append ARGS \
+        -v "/dev:/dev" \
+        --privileged \
+        --network host
+else
+    # :7447 (Zenoh) 
+    # :8765 (Foxglove)
+    append ARGS \
+        -p 7447:7447 \
+        -p 8765:8765
+fi
+
+# Image to run
+append ARGS \
+    "$IMAGE_TAG"
+
+# Debug command with DEBUG=1
+call $CMD $ARGS

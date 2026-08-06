@@ -1,0 +1,40 @@
+#! /bin/sh
+#
+# Build the image for this workspace
+#
+# Author: Kaj Munhoz Arfvidsson
+
+## To build cross-platform,
+##   1. use relevant CONFIG (see util/config.sh),
+##   2. your host computer must have QEMU:
+##      > sudo apt-get install qemu-user-static
+##      > docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+##      > docker buildx create --use
+
+. "$(dirname "$0")/config.sh"
+
+CMD="docker buildx build"
+ARGS=""
+
+append ARGS \
+    --network "host" \
+    --platform "$BUILD_PLATFORM" \
+    --build-arg "BUILD_TAG=$BUILD_TAG" \
+    --build-arg "ROSDISTRO=$ROSDISTRO" \
+    --build-arg "WORKSPACE=$WORKSPACE"
+
+if [ "$BUILD_FILE" = "docker/Dockerfile.base" ]; then 
+    append ARGS --build-arg "USER_CREDENTIALS=$USER_CREDENTIALS"
+fi  
+
+# Special case for TX2s that have old version of docker
+if [ "$(jetson_release)" = "R32" ]; then
+    CMD="docker build"
+else
+    append ARGS "$(ifelse IMAGE_PUSH --push --load)"
+fi
+
+# Extra arguments are forwarded to docker build before the default image target.
+append ARGS --tag "$IMAGE_TAG" --file "$BUILD_FILE" "$@" "$BUILD_CONTEXT"
+
+call $CMD $ARGS

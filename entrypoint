@@ -1,0 +1,29 @@
+#! /bin/bash
+#
+# This entrypoint script will be called everytime a container is started.
+#
+# Author: Kaj Munhoz Arfvidsson
+
+set -e
+
+# If you want something to start or run when the container spins up,
+# this is the place to put it!
+
+section() {
+    local msg="== $1 "
+    local cols=${COLUMNS:-$(tput cols)}
+    local fill=$(( cols - ${#msg} ))
+
+    (( fill < 0 )) && fill=0
+
+    local gray=$(tput setaf 8)
+    local bold=$(tput bold)
+    local reset=$(tput sgr0)
+
+    printf "%s%s%s" "$bold" "$gray" "$msg"
+    printf '%*s' "$fill" '' | tr ' ' '='
+    printf "%s\n" "$reset"
+}
+section "Entering SVEA Container"
+
+exec "$@"
