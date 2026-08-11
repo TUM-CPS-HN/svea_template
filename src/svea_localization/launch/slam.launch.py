@@ -60,7 +60,7 @@ def main(
     use_lidar: bool = True,
     lidar_ip: str = "192.168.0.10",
     # Encoder Settings
-    use_two_encoders: bool = True,
+    use_two_encoders: bool = False,
     ## Local EKF (odom -> base_link)
     use_ekf: bool = True,
     ekf_params: str = "local_ekf.yaml",

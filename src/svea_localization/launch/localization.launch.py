@@ -19,7 +19,7 @@ def main(
     odom_frame: str = '{name}/odom',
     base_frame: str = '{name}/base_link',
     # Encoder Settings
-    use_two_encoders: bool = True,
+    use_two_encoders: bool = False,
     # LiDAR Settings
     use_lidar: bool = True,
     lidar_ip: str = '192.168.0.10',
