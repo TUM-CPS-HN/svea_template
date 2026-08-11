@@ -122,17 +122,10 @@ def main(
         # --------------------------------------------------------------
         # Local EKF:  <name>/odom -> <name>/base_link
         # --------------------------------------------------------------
-        LOCAL_EKF_PARAMS = {"map_frame": map_frame,
-                            "odom_frame": odom_frame,
-                            "base_link_frame": base_frame,
-                            "world_frame": odom_frame,
-                            "imu0": f"{name}/mavros/imu/data_raw",
-                            "odom0": f"{name}/mavros/wheel_odometry/odom"}
-
-        LOCAL_EKF_PARAMS_FILE = find_params(bl, "svea_localization", ekf_params)
+        odom0 = f"{name}/mavros/wheel_odometry/odom"
 
         if not use_two_encoders:
-            LOCAL_EKF_PARAMS["odom0"] = f"{name}/wheel_odometry/twist/filtered"
+            odom0 = f"{name}/wheel_odometry/twist/filtered"
 
             bl.node("svea_localization", "wheel_twist_node.py",
                         name="wheel_twist",
@@ -140,12 +133,17 @@ def main(
                                 "distance_topic": f"{name}/mavros/wheel_odometry/distance",
                                 "twist_topic": f"{name}/mavros/wheel_odometry/odom",
                                 "imu_topic": f"{name}/mavros/imu/data_raw"})
-            
+
         if use_ekf:
+            EKF_PARAMS_FILE = find_params(bl, "svea_localization", ekf_params)
             bl.node("robot_localization", "ekf_node",
                     name="ekf_local",
-                    param_files=LOCAL_EKF_PARAMS_FILE,
-                    params=LOCAL_EKF_PARAMS,
+                    cmd_args=["--ros-args", "--params-file", EKF_PARAMS_FILE],
+                    params={"map_frame": map_frame,
+                            "odom_frame": odom_frame,
+                            "base_link_frame": base_frame,
+                            "world_frame": odom_frame,
+                            "odom0": odom0},
                     remaps={"odometry/filtered": "odometry/local"})
 
         # --------------------------------------------------------------
@@ -158,7 +156,7 @@ def main(
 
         bl.node("slam_toolbox", slam_exec,
                 name="slam_toolbox",
-                param_files=SLAM_PARAMS,
+                cmd_args=["--ros-args", "--params-file", SLAM_PARAMS],
                 params={"map_frame": map_frame,
                         "odom_frame": odom_frame,
                         "base_frame": base_frame,
