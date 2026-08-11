@@ -60,7 +60,7 @@ def main(
     use_lidar: bool = True,
     lidar_ip: str = "192.168.0.10",
     # Encoder Settings
-    use_two_encoders: bool = False,
+    use_two_encoders: bool = True,
     ## Local EKF (odom -> base_link)
     use_ekf: bool = True,
     ekf_params: str = "local_ekf.yaml",
@@ -122,7 +122,15 @@ def main(
         # --------------------------------------------------------------
         # Local EKF:  <name>/odom -> <name>/base_link
         # --------------------------------------------------------------
+        LOCAL_EKF_PARAMS = {"map_frame": map_frame,
+                            "odom_frame": odom_frame,
+                            "base_link_frame": base_frame,
+                            "world_frame": odom_frame,
+                            "imu0": f"{name}/mavros/imu/data_raw",
+                            "odom0": f"{name}/mavros/wheel_odometry/odom"}
+
         LOCAL_EKF_PARAMS_FILE = find_params(bl, "svea_localization", ekf_params)
+
         if not use_two_encoders:
             LOCAL_EKF_PARAMS["odom0"] = f"{name}/wheel_odometry/twist/filtered"
 
@@ -137,10 +145,7 @@ def main(
             bl.node("robot_localization", "ekf_node",
                     name="ekf_local",
                     param_files=LOCAL_EKF_PARAMS_FILE,
-                    params={"map_frame": map_frame,
-                            "odom_frame": odom_frame,
-                            "base_link_frame": base_frame,
-                            "world_frame": odom_frame},
+                    params=LOCAL_EKF_PARAMS,
                     remaps={"odometry/filtered": "odometry/local"})
 
         # --------------------------------------------------------------
