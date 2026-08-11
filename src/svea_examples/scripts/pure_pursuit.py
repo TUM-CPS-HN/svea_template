@@ -49,7 +49,7 @@ class pure_pursuit(rx.Node):
     DELTA_TIME = 0.1
     TRAJ_LEN = 20
 
-    points = rx.Parameter('[[-2.3, -7.1], [10.5, 11.7], [5.7, 15.0], [-7.0, -4.0]]')
+    points = rx.Parameter([-2.3, -7.1, 10.5, 11.7, 5.7, 15.0, -7.0, -4.0])
     target_velocity = rx.Parameter(0.6)
     
     # Interfaces
@@ -72,7 +72,7 @@ class pure_pursuit(rx.Node):
         to call the loop method at regular intervals.
         """
         # Convert parameter to numerical list
-        self._points = eval(self.points)
+        self._points = np.array(self.points).reshape(-1, 2).tolist()
 
         self.controller = PurePursuitController()
         self.controller.target_velocity = self.target_velocity
@@ -84,6 +84,7 @@ class pure_pursuit(rx.Node):
         self.goal = self._points[self.curr]
         self.goal_marker.place([*self.goal, 0.5], color='blue')
         self.update_traj(x, y)
+        self.actuation.enable_difflock() 
 
         self.create_timer(self.DELTA_TIME, self.loop)
 
@@ -104,8 +105,8 @@ class pure_pursuit(rx.Node):
             self.update_traj(x, y)
 
         steering, velocity = self.controller.compute_control(state)
-        # self.get_logger().info(f"Steering: {steering}, Velocity: {velocity}")
-        self.actuation.send_control(steering, velocity)
+        self.get_logger().info(f"Steering: {steering}, Velocity: {velocity}")
+        self.actuation.send_control(steering, velocity*-1.0)
 
     def update_goal(self):
         """

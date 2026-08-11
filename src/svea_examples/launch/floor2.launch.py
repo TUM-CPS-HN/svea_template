@@ -10,7 +10,7 @@ def main(
     initial_pose_x: float = -7.4,
     initial_pose_y: float = -15.4,
     initial_pose_a: float = +0.9,
-    points: str = '[[-2.3, -7.1], [10.5, 11.7], [5.7,  15.0], [-7.0, -4.0]]',
+    points: list = [-2.3, -7.1, 10.5, 11.7, 5.7, 15.0, -7.0, -4.0],
 ):
     bl = BetterLaunch()
 
@@ -60,7 +60,5 @@ def main(
                             # "points": points,
                             "localization/base_frame": f"{name}/base_link",
                         })
-
-    bl.include("svea_core", "map_and_foxglove.launch.py",
-               map_name=MAP_NAME,
-               use_foxglove=use_foxglove)
+    if use_foxglove:
+        bl.include("foxglove_bridge", "foxglove_bridge_launch.xml")
