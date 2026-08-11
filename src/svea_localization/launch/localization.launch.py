@@ -87,7 +87,7 @@ def main(
         if not use_two_encoders:
             LOCAL_EKF_PARAMS["odom0"] = f"{name}/wheel_odometry/twist/filtered"
 
-            bl.node("svea_localization", "wheel_twist_node.py",
+            bl.node("svea_localization", "single_encoder_twist_filter.py",
                         name="wheel_twist",
                         params={"base_frame": base_frame,
                                 "distance_topic": f"{name}/mavros/wheel_odometry/distance",
