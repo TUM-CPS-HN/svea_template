@@ -1,5 +1,32 @@
 #!/usr/bin/env python3
+import yaml
 from better_launch import BetterLaunch, launch_this
+
+
+def load_obstacles(bl, map_pkg, map_name):
+    """Read <map_name>.obstacles.yaml and return the obstacle list.
+
+    Returns [] if the file does not exist. ROS 2 parameters cannot hold
+    nested arrays, so sim_lidar.py expects a string that it runs through
+    ast.literal_eval() (see prepare_obstacles).
+    """
+    try:
+        path = bl.find(map_pkg, f"{map_name}.obstacles.yaml")
+    except (ValueError, FileNotFoundError):
+        return []
+
+    with open(path) as f:
+        data = yaml.safe_load(f) or {}
+
+    # Tolerate both a bare list and the usual {'obstacles': [...]} layout,
+    # as well as an accidental ros__parameters section.
+    if isinstance(data, dict):
+        if 'ros__parameters' in data:
+            data = data['ros__parameters']
+        data = data.get('obstacles', [])
+
+    return data or []
+
 
 @launch_this
 def main(
@@ -19,10 +46,7 @@ def main(
     odom_frame = odom_frame.format(name=name)
     base_frame = base_frame.format(name=name)
 
-    try:
-        OBSTACLE_MAP = bl.find(map_pkg, f"{map_name}.obstacles.yaml")
-    except (ValueError, FileNotFoundError):
-        OBSTACLE_MAP = {}
+    OBSTACLES = load_obstacles(bl, map_pkg, map_name)
 
     with bl.group(name):
 
@@ -36,11 +60,10 @@ def main(
                             odom_frame=odom_frame,
                             base_frame=base_frame))
 
-        if OBSTACLE_MAP:
+        if OBSTACLES:
             # Start simulated LiDAR
             bl.node("svea_core", "sim_lidar.py",
                     name="sim_lidar",
-                    param_files=OBSTACLE_MAP,
-                    params= dict(
-                        laser_frame=f"{name}/laser",
-                    ))
+                    params=dict(laser_frame=f"{name}/laser",
+                                odometry_top="odometry/local",
+                                obstacles=str(OBSTACLES)))

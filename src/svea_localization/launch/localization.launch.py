@@ -89,10 +89,12 @@ def main(
 
             bl.node("svea_localization", "single_encoder_twist_filter.py",
                         name="wheel_twist",
-                        params={"base_frame": base_frame,
-                                "distance_topic": f"{name}/mavros/wheel_odometry/distance",
-                                "twist_topic": f"{name}/mavros/wheel_odometry/odom",
-                                "imu_topic": f"{name}/mavros/imu/data_raw"})
+                        params={"base_frame":       base_frame,
+                                "distance_topic":   f"/{name}/mavros/wheel_odometry/distance",
+                                "twist_topic":      odom0,
+                                "imu_topic":        f"/{name}/mavros/imu/data_raw",
+                                "rc_topic":         f"/{name}/mavros/rc/in",
+                                "control_topic":    f"/{name}/mavros/manual_control/send"})
 
         with bl.group(name):
             bl.node("robot_localization", "ekf_node",
