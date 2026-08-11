@@ -75,10 +75,10 @@ def main(
 
     # Frames — same convention as localization.launch.py
     map_frame = "map"
-    odom_frame = f"/{name}/odom"
-    base_frame = f"/{name}/base_link"
-    laser_frame = f"/{name}/laser"
-    imu_frame = f"/{name}/imu"
+    odom_frame = f"{name}/odom"
+    base_frame = f"{name}/base_link"
+    laser_frame = f"{name}/laser"
+    imu_frame = f"{name}/imu"
 
     # ------------------------------------------------------------------
     # Low-Level Interface
