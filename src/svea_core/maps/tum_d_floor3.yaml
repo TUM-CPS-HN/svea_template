@@ -1,0 +1,7 @@
+image: tum_d_floor3.pgm
+mode: trinary
+resolution: 0.050
+origin: [-10.944, -26.023, 0]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
