@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SLAM bringup for SVEA (better_launch port of the legacy slam.launch XML).
+SLAM bringup for SVEA.
 
 Place at: src/svea_localization/launch/slam.launch.py
 
@@ -60,7 +60,7 @@ def main(
     use_lidar: bool = True,
     lidar_ip: str = "192.168.0.10",
     # Encoder Settings
-    use_two_encoders: bool = False,
+    use_two_encoders: bool = True,
     ## Local EKF (odom -> base_link)
     use_ekf: bool = True,
     ekf_params: str = "local_ekf.yaml",
@@ -122,14 +122,15 @@ def main(
         # --------------------------------------------------------------
         # Local EKF:  <name>/odom -> <name>/base_link
         # --------------------------------------------------------------
-        odom0 = f"/{name}/mavros/wheel_odometry/odom" if use_two_encoders else f"/{name}/wheel_odometry/twist/filtered"
-
-        if not use_two_encoders:
+        if use_two_encoders:
+            ekf_input = {"twist0": f"/{name}/mavros/wheel_odometry/odom"}
+        else:
+            ekf_input = {"twist0": f"/{name}/wheel_odometry/twist/filtered"}
             bl.node("svea_localization", "single_encoder_twist_filter.py",
                         name="wheel_twist",
                         params={"base_frame":       base_frame,
                                 "distance_topic":   f"/{name}/mavros/wheel_odometry/distance",
-                                "twist_topic":      odom0,
+                                "twist_topic":      ekf_input["twist0"],
                                 "imu_topic":        f"/{name}/mavros/imu/data_raw",
                                 "rc_topic":         f"/{name}/mavros/rc/in",
                                 "control_topic":    f"/{name}/mavros/manual_control/send"})
@@ -143,7 +144,7 @@ def main(
                             "odom_frame": odom_frame,
                             "base_link_frame": base_frame,
                             "world_frame": odom_frame,
-                            "odom0": odom0},
+                            "twist0": ekf_input["twist0"]},
                     remaps={"odometry/filtered": "odometry/local"})
 
         # --------------------------------------------------------------

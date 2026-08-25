@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import ast          # ← 新增
 import yaml
 from better_launch import BetterLaunch, launch_this
 
@@ -12,18 +13,23 @@ def load_obstacles(bl, map_pkg, map_name):
     """
     try:
         path = bl.find(map_pkg, f"{map_name}.obstacles.yaml")
-    except (ValueError, FileNotFoundError):
+    except Exception:
         return []
 
     with open(path) as f:
         data = yaml.safe_load(f) or {}
 
-    # Tolerate both a bare list and the usual {'obstacles': [...]} layout,
-    # as well as an accidental ros__parameters section.
     if isinstance(data, dict):
+        for value in data.values():
+            if isinstance(value, dict) and 'ros__parameters' in value:
+                data = value
+                break
         if 'ros__parameters' in data:
             data = data['ros__parameters']
         data = data.get('obstacles', [])
+
+    if isinstance(data, str):
+        data = ast.literal_eval(data) if data.strip() else []
 
     return data or []
 
@@ -65,5 +71,5 @@ def main(
             bl.node("svea_core", "sim_lidar.py",
                     name="sim_lidar",
                     params=dict(laser_frame=f"{name}/laser",
-                                odometry_top="odometry/local",
+                                odometry_topic="odometry/local",
                                 obstacles=str(OBSTACLES)))

@@ -87,7 +87,7 @@ class sim_lidar(rx.Node):
 
 
     ## Parameters ##
-    odometry_top = rx.Parameter('odometry/local')
+    odometry_topic = rx.Parameter('odometry/local')
     laser_frame = rx.Parameter('laser')
     obstacles = rx.Parameter('', evaluate=prepare_obstacles)
     
@@ -98,7 +98,7 @@ class sim_lidar(rx.Node):
     _viz_edges_pub = rx.Publisher(Marker, 'viz_edges', qos_pubber)
     
     ## Subscribers ##
-    @rx.Subscriber(Odometry, odometry_top, qos_subber)
+    @rx.Subscriber(Odometry, odometry_topic, qos_subber)
     def update_lidar_position(self, odmetry_msg):
         """Updates the lidar position using the vehicle state and the
         known offset between the SVEA rear axle and lidar mount

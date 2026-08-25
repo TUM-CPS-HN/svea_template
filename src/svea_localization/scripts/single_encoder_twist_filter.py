@@ -113,8 +113,8 @@ class single_encoder_twist_filter(rx.Node):
     # The nominal centre. Receivers vary by a few tens of counts and drift with
     # temperature, so this is only a starting point and a sanity reference --
     # see rc_neutral_auto below.
-    rc_neutral = rx.Parameter(1500)
-    rc_deadband = rx.Parameter(80)
+    rc_neutral = rx.Parameter(1513)
+    rc_deadband = rx.Parameter(1)
     rc_reversed = rx.Parameter(False)   # True if stick forward reads below centre
     rc_timeout = rx.Parameter(0.5)      # receiver considered stale after this [s]
 
