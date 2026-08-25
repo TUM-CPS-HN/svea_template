@@ -1,4 +1,4 @@
-image: tum_d_floor3_new.pgm
+image: tum_d_floor3.pgm
 mode: trinary
 resolution: 0.050
 origin: [-0.796, -6.493, 0]

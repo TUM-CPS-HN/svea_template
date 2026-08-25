@@ -7,10 +7,10 @@ MAP_NAME = "tum_d_floor3"
 def main(
     is_sim: bool = True,
     use_foxglove: bool = True,
-    initial_pose_x: float = 1.36,
-    initial_pose_y: float = 0.26,
-    initial_pose_a: float = -2.1037,
-    points: list = [-4.68, -12.73, 10.89, -19.91, 19.08, -2.56, 4.17, 5.78],
+    initial_pose_x: float = 4.08,
+    initial_pose_y: float = -0.17,
+    initial_pose_a: float = 0.0,
+    points: list = [24.80, -0.179, 25.83, 17.32, 6.25, 17.48, 5.10, 0.30],
 ):
     bl = BetterLaunch()
 
