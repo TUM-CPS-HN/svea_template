@@ -1,36 +1,18 @@
 # Introduction
 
-In this tutorial, we will introduce the SVEA hardware and software, and discuss
-some of the organization around the SVEA software stack. This documentation covers
-the updated ROS 2 implementation with the new rosonic framework.
+In this tutorial, we will introduce the SVEA hardware and software, and discuss some of the organization around the SVEA software stack. This documentation covers the updated ROS 2 implementation with the new rosonic framework.
 
 ## Hardware
 
 ![svea hardware](../media/svea_hardware.png)
 
-The SVEA platform consists of the following hardware components:
+As described in the diagram above, the ZED Box Orin is the main computer where all sensor data goes and where all high-level decision+control is made. The system now runs ROS2 Jazzy on Ubuntu 22.04.
 
-1. [Single-channel LiDAR](https://www.hokuyo-usa.com/products/lidar-obstacle-detection/ust-10lx)
-2. TODO
-
-As described in the diagram above, the TX2 (or newer Jetson) is the main computer where all sensor
-data goes and where all high-level decision+control is made. The system now runs ROS 2 Jazzy
-on Ubuntu 22.04.
-
-The original RC remote still works to control the chassis, with some additional
-features added on. In particular, in addition to the RC remote's standard
-features, we have also added an override to the RC remote. By putting the metal
-switch on top of the remote into the most forward position, the Teensy will
-start ignoring any actuation commands from ROS nodes and **only listen
-to the RC remote**. Thus it's a good idea to always keep the remote around in case
-you need to stop the vehicle from doing something unsafe.
+The original RC remote still works to control the chassis, with some additional features added on. In particular, in addition to the RC remote's standard features, we have also added an override to the RC remote. By putting the metal switch on top(SWB) of the remote into the most forward position, the Teensy will start ignoring any actuation commands from ROS nodes and **only listen to the RC remote**. Thus it's a good idea to always keep the remote around in case you need to stop the vehicle from doing something unsafe.
 
 ## Low-Level Interface (LLI)
 
-To interface with the vehicle chassis, the main computer communicates with the Teensy
-arduino, which is connected to and manages the SPMB board. The system now uses
-micro-ROS for communication between the Teensy and the main computer, providing
-better real-time performance and lower latency compared to the previous rosserial implementation.
+To interface with the vehicle chassis, the main computer communicates with the STM32F7 board, which is connected to and manages the Power Management Board(PMB). 
 
 The low-level interface provides control over:
 
@@ -39,7 +21,7 @@ The low-level interface provides control over:
 - **High Gear**: Boolean flag for transmission gear selection
 - **Differential Lock**: Boolean flag for front/rear differential control
 
-The actual velocity range depends on the gear setting:
+Press SWA to switch between High/Low Gear. The actual velocity range depends on the gear setting:
 
 - **Low Gear (gear=0)**: Approximately ±1.7 m/s
 - **High Gear (gear=1)**: Approximately ±3.6 m/s
@@ -83,9 +65,6 @@ if __name__ == "__main__":
     MyNode.main()
 ```
 
-???+ info "Note"
-      You can also use normal ROS2 frame for svea.
-
 ## Development Workflow
 
 The modern SVEA development workflow emphasizes:
@@ -93,9 +72,12 @@ The modern SVEA development workflow emphasizes:
 1. **Simulation First**: Develop and test in simulation before moving to hardware
 2. **Modular Design**: Use interfaces and controllers as building blocks
 3. **Parameter-Driven**: Configure behavior through ROS parameters
-4. **Visualization**: Leverage RViz and custom visualization tools
+4. **Visualization**: Leverage Foxglove and custom visualization tools
 
 ## Next Steps
 
-In the next tutorial, we will guide you through implementing a pure pursuit
-controller and demonstrate the complete workflow from simulation to real vehicle deployment.
+In the next tutorial, we will guide you through implementing a pure pursuit controller and demonstrate the complete workflow from simulation to real vehicle deployment.
+
+## Task 1
+
+Play around with SVEA using RC
