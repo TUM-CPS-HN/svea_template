@@ -2,27 +2,23 @@
 
 ## SVEA-PX4-Autopilot
 
-刷机：
-https://github.com/nilskiefer/SVEA-PX4-Autopilot#
+### Steps
+1. Install CODEGRIP on Windows and Linux.
+2. Connect your laptop to the USB Type-C port on the right side of the STM32 board (labeled PWR/DBG). Run ```lsusb``` in the terminal or use CODEGRIP's device scan to check that MikroElektronika device appears.
+3. Update the firmware using CODEGRIP on Windows(Linux doesn't work). Go to Help->Updates->CODEGRIP. Unplug your device, click SCAN DEVICES, and reconnect the device within 5 seconds. Once CODEGRIP detects the device, you can update the firmware.
+4. Clone https://github.com/nilskiefer/SVEA-PX4-Autopilot# to a local folder and open it in VS Code. When the notification appears in the bottom-left corner, click "Reopen in Container" and select "PX4 detect" at the top.
+5. Follow the guide in SVEA-PX4-Autopilot/docs/en/svea/build-and-flash.md and make sure openocd is installed. Close CODEGRIP before running the openocd command so that CODEGRIP does not keep the device busy.
 
-right bottom connect reopen in container, wait for a while around 10 mins
-
-install codegrip
-
-connect your laptop to the top right type C port(with PWR/DBG), use lsusb or codegrip(scan device) to check if MikroElektronika MikroSDK TinyUSB Device is there.
-
-Follow SVEA-PX4-Autopilot/docs/en/svea/build-and-flash.md
-
-git config --global --add safe.directory '*'(no use if you click manage unsafe repository)
-
+### Notes
+1. To rebuild, remove the existing build first:
+```bash
 rm -rf build/mikroe_clicker4-stm32f7_noboot
 make mikroe_clicker4-stm32f7_noboot
-
-sudo apt install openocd
-
-reopen vscode and reopen container
-
-codegrip firmware update in windows!
+```
+2. If a notification appears in the bottom-right corner, click "Manage Unsafe Repository", then select "All Repositories" at the top. If you miss the notification, run the following command in the terminal instead:
+```bash
+git config --global --add safe.directory '*'
+```
 
 ## ZED Box
 
