@@ -107,13 +107,3 @@ Running the localization amounts to adding `localize.launch` to your project lau
 ### MoCap Localization (Qualisys)
 
 If you are using a motion capture system (like Qualisys) for localization, please refer to the [MoCap Localization Guide](docs/mocap_localization.md).
-
-### Using priviliged run script
-
-Instead of using `util/run-dev`, which is intended for development environments
-and simulation, to access all hardware on the real SVEA you must start
-a container with the priviliged run script:
-
-```bash
-util/run
-```

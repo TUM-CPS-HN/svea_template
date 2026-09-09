@@ -1,17 +1,10 @@
 # Floor 2 and Pure-Pursuit
 
-In this tutorial, we will start interacting with the code base for the SVEA
-platform using the new ROS 2 and rosonic framework. In particular, you will inspect the pure-pursuit 
-examples we have implemented and improve upon them to get you ready for running the 
-examples on the real vehicles.
+In this tutorial, we will start interacting with the code base for the SVEA platform using the new ROS 2 and rosonic framework. In particular, you will inspect the pure-pursuit examples we have implemented and improve upon them to get you ready for running the examples on the real vehicles.
 
-In this tutorial, there are some criterion you need to fulfill, such as not running
-into walls. However, the quality of your solution is up for you to
-judge. Ultimately, this tutorial is designed for you to start getting your hands
-dirty with your own automated driving system.
+In this tutorial, there are some criterion you need to fulfill, such as not running into walls. However, the quality of your solution is up for you to judge. Ultimately, this tutorial is designed for you to start getting your hands dirty with your own automated driving system.
 
-If you haven't already, please checkout the [installation instructions](https://github.com/KTH-SML/svea/blob/main/README.md#installation).
-Then, enter into a Docker container by calling with the `util/run-dev` script.
+If you haven't already, please checkout the installation instruction in README.md. Then, enter into a Docker container by calling with the `util/run` script.
 
 ## Prerequisites
 
@@ -22,19 +15,17 @@ Before starting, ensure you have:
 
 ## Running the Floor 2 Example
 
-We will use the Floor 2 example, so please make sure it works before proceeding
-with this tutorial. Check this by running the following without any errors:
+We will use the Floor 2 example, so please make sure it works before proceeding with this tutorial. Check this by running the following without any errors:
 
 ```bash
 ros2 launch svea_examples floor2.xml is_sim:=true
 ```
 
-Before you get started with implementing improvements to the Floor 2 example, you should first create your own version of the example that you can edit. You can do this by copying `svea_examples/launch/floor2.launch` into `<your project package>/launch/floor2.launch` and `svea_examples/scripts/pure_pursuit.py` into `<your project package>/scripts/`.
+Before you get started with implementing improvements to the Floor 2 example, you should first create your own package that you can edit. You can do this by copying `svea_examples/launch/floor2.launch` into `<your project package>/launch/floor2.launch` and `svea_examples/scripts/pure_pursuit.py` into `<your project package>/scripts/`.
 
 ## Understanding the Pure Pursuit Implementation
 
-The pure pursuit controller is now implemented using the rosonic framework. Let's examine
-the key components:
+The pure pursuit controller is now implemented using the rosonic framework. Let's examine the key components:
 
 ### 1. Pure Pursuit Controller Class
 
@@ -87,18 +78,11 @@ If this is "too easy" for you, then consider the following enhancements:
 
 ## Task 3: Park the Vehicle
 
-Currently, the vehicle will continuously goes around the paths until you halt
-the launch or if the vehicle encounters an obstacle (if you completed the previous task).
-In this taks, we'd like you to give the vehicle the ability to stop at a desginated
-location, what we will refer to as a "parking spot".
+Currently, the vehicle will continuously goes around the paths until you halt the launch or if the vehicle encounters an obstacle (if you completed the previous task). In this taks, we'd like you to give the vehicle the ability to stop at a desginated location, what we will refer to as a "parking spot".
 
-We recommend you start by adding a point in the trajectory where, if the vehicle
-is close enough, or if no more points come after it, the vehicle will switch
-to being finished. In other words, when `self.controller.is_finished` switches to being `true`.
-Develop an approach that allows the vehicle to park at a good angle.
+We recommend you start by adding a point in the trajectory where, if the vehicle is close enough, or if no more points come after it, the vehicle will switch to being finished. In other words, when `self.controller.is_finished` switches to being `true`. Develop an approach that allows the vehicle to park at a good angle.
 
-Similar to the previous task, if this is "too easy" for you, consider the following
-enhancements:
+Similar to the previous task, if this is "too easy" for you, consider the following enhancements:
 
 1. Add an angle error tolerance and make sure the vehicle can park within that error tolerance
 2. Combine the approach with the previous task and make sure the vehicle can park even when there are obstacles around the parking spot
