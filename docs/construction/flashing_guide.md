@@ -20,6 +20,13 @@ make mikroe_clicker4-stm32f7_noboot
 git config --global --add safe.directory '*'
 ```
 
+## ESP32
+
+### Steps
+
+1. Clone https://github.com/nilskiefer/SVEA-PX4-Autopilot-MCU-Peripheral to a local folder.
+2. Follow the instructions in the README, starting with the "Host Python venv" section.
+
 ## ZED Box
 
 How to flash Zed box,
@@ -48,8 +55,3 @@ notice: one error in original: ip address should be 192.168.0.100
 ping 192.168.0.10
 
 
-# ESP for Encoder
-
-https://github.com/nilskiefer/SVEA-PX4-Autopilot-MCU-Peripheral
-
-follow the readme guide starting from Host Python venv
