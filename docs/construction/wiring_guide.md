@@ -47,12 +47,16 @@ Connect the balance lead (the white JST-XH connector) to the PMB, so that the bo
 
 ### 1. RX Low-Power Warning
 
-Press Exit + Enter, scroll down to Alarm, and set RX to 3 V.
+Press Exit and Enter simultaneously, scroll down to Alarm, and set RX to 3 V.
 
 ### 2. Enable Connection to the Chassis
 
-Take out the receiver and hold the button between its two antennas until the blue light turns on. Press and hold SWD to arm or disarm the chassis. Arming enables control of the chassis.
+Take out the receiver and briefly press the button between its two antennas once. The blue light should turn on. Press and hold SWD to arm or disarm the chassis. Arming enables control of the chassis. Press and hold ESC until the red light blinks five times.
 
-### 3. Mode Switch
+### 3. Reverse Throttle
+
+When you run the car for the first time, the forward and reverse directions are reversed. To correct this, press Exit and Enter simultaneously, scroll down to Reverse, and set TH to REV.
+
+### 4. Mode Switch
 
 Use SWA to switch between high and low gear. SWB selects the control mode: back enables remote and program control, middle enables remote control only, and front disables all control.
