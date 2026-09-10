@@ -38,7 +38,7 @@ def main(
 
         INITIAL_POSES = {
             "svea_a": (initial_pose_x, initial_pose_y, initial_pose_a),
-            "svea_b": (0.0, 0.0, 0.0),
+            # "svea_b": (0.0, 0.0, 0.0),
         }
 
         for name, (init_x, init_y, init_a) in INITIAL_POSES.items():

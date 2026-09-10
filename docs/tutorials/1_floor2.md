@@ -18,7 +18,7 @@ Before starting, ensure you have:
 We will use the Floor 2 example, so please make sure it works before proceeding with this tutorial. Check this by running the following without any errors:
 
 ```bash
-ros2 launch svea_examples floor2.xml is_sim:=true
+ros2 launch svea_examples floor2.xml is_sim:=True
 ```
 
 Before you get started with implementing improvements to the Floor 2 example, you should first create your own package that you can edit. You can do this by copying `svea_examples/launch/floor2.launch` into `<your project package>/launch/floor2.launch` and `svea_examples/scripts/pure_pursuit.py` into `<your project package>/scripts/`.
@@ -80,7 +80,7 @@ If this is "too easy" for you, then consider the following enhancements:
 
 Currently, the vehicle will continuously goes around the paths until you halt the launch or if the vehicle encounters an obstacle (if you completed the previous task). In this taks, we'd like you to give the vehicle the ability to stop at a desginated location, what we will refer to as a "parking spot".
 
-We recommend you start by adding a point in the trajectory where, if the vehicle is close enough, or if no more points come after it, the vehicle will switch to being finished. In other words, when `self.controller.is_finished` switches to being `true`. Develop an approach that allows the vehicle to park at a good angle.
+We recommend you start by adding a point in the trajectory where, if the vehicle is close enough, or if no more points come after it, the vehicle will switch to being finished. In other words, when `self.controller.is_finished` switches to being `True`. Develop an approach that allows the vehicle to park at a good angle.
 
 Similar to the previous task, if this is "too easy" for you, consider the following enhancements:
 
@@ -95,7 +95,7 @@ Similar to the previous task, if this is "too easy" for you, consider the follow
 
 ```bash
 # Launch simulation
-ros2 launch svea_core svea_launch.xml is_sim:=true
+ros2 launch svea_core svea_launch.xml is_sim:=True
 
 # Launch visualization
 ros2 launch svea_core map_and_foxglove.xml map:=floor2
@@ -112,7 +112,7 @@ When ready to test on the real vehicle:
 2. **Launch the hardware interface**:
 ```bash
 # Launch svea
-ros2 launch svea_core svea_launch.xml is_sim:=false
+ros2 launch svea_core svea_launch.xml is_sim:=False
 
 # Launch visualization
 ros2 launch svea_core map_and_foxglove.xml map:=floor2
