@@ -1,4 +1,4 @@
-# Floor 2 and Pure-Pursuit
+# Path-Tracking and Pure-Pursuit
 
 In this tutorial, we will start interacting with the code base for the SVEA platform using the new ROS 2 and rosonic framework. In particular, you will inspect the pure-pursuit examples we have implemented and improve upon them to get you ready for running the examples on the real vehicles.
 
