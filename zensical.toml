@@ -54,9 +54,11 @@ nav = [
   ] },
   { "Tutorial" = [
     { "0. Introduction" = "tutorials/0_intro.md" },
-    { "1. Floor 2 and Pure-Pursuit" = "tutorials/1_floor2.md" },
-    { "2. Lidar Simulation" = "tutorials/2_lidar_sim.md" },
-    { "3. The SVEA" = "tutorials/3_svea_operation.md" },
+    { "1. Path-Tracking and Pure-Pursuit" = "tutorials/1_1_path_tracking.md" },
+    { "1. Lidar Map" = "tutorials/1_2_tutorial_lidar_map.md" },
+    { "2. Eco-Drive" = "tutorials/2_eco_drive.md" },
+    { "3. Adaptive Cruise Control" = "tutorials/3_adaptive_cruise_control.md" },
+    { "The SVEA" = "tutorials/svea_operation.md" },
   ] },
   { "Examples" = [
     { "Teleop" = "examples/teleop.md" },
