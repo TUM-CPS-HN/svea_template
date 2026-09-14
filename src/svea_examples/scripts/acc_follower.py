@@ -9,8 +9,8 @@ same as `pure_pursuit.py` from Tutorial 1 and is already filled in below —
 what's missing is the Adaptive Cruise Control part: tracking the leader's
 state and turning it into a target velocity.
 
-See docs/tutorials/3_adaptive_cruise_control.md, Task 1, for the full
-control law and the reasoning behind it.
+See docs/tutorials/3_adaptive_cruise_control.md, Task 1, for the
+requirements your control law needs to satisfy.
 """
 
 import time
@@ -32,17 +32,16 @@ class acc_follower(rx.Node):
     points = rx.Parameter([-2.3, -7.1, 10.5, 11.7, 5.7, 15.0, -7.0, -4.0])
     is_sim = rx.Parameter(True)
 
-    # --- ACC parameters: tune these from the launch file, not in here ---
+    # --- ACC parameters shared by any control law; tune from the launch file ---
     leader_odom_topic = rx.Parameter('/svea_a/odometry/local')
     cruise_velocity = rx.Parameter(0.6)      # [m/s] speed to converge to when the gap is large
     max_velocity = rx.Parameter(1.0)         # [m/s]
-    min_gap = rx.Parameter(0.8)              # [m] desired gap at zero speed
-    time_headway = rx.Parameter(1.2)         # [s]
-    gap_gain = rx.Parameter(0.35)
-    relative_speed_gain = rx.Parameter(0.6)
     max_accel = rx.Parameter(0.4)            # [m/s^2]
     max_decel = rx.Parameter(0.8)            # [m/s^2]
     leader_timeout = rx.Parameter(1.0)       # [s] fall back if leader odom is older than this
+
+    # TODO: add whatever parameters your chosen control law needs on top of
+    # these (gains, distance/time thresholds, ...) — see Task 1.
 
     # Interfaces
     actuation = ActuationInterface()
@@ -89,11 +88,12 @@ class acc_follower(rx.Node):
         self.create_timer(self.DELTA_TIME, self.loop)
 
     def compute_acc_velocity(self, state) -> float:
-        """TODO: implement the constant-time-headway ACC control law.
+        """TODO: implement your ACC control law.
 
         See docs/tutorials/3_adaptive_cruise_control.md, Task 1, for the
-        formula. Use `state` for your own position/velocity, and whatever
-        you stored in `_on_leader_odom` for the leader's. Don't forget to:
+        requirements it needs to satisfy. Use `state` for your own
+        position/velocity, and whatever you stored in `_on_leader_odom` for
+        the leader's. Don't forget to:
           - clip the result to [0, self.max_velocity]
           - rate-limit against the controller's current target_velocity
             using self.max_accel / self.max_decel, so commands don't jump

@@ -46,17 +46,14 @@ for name, (init_x, init_y, init_a) in INITIAL_POSES.items():
 
 ### The control law
 
-Your follower needs to convert "where is the leader, how fast is it going, where am I, how fast am I going" into a target speed for its own `PurePursuitController`. A standard constant-time-headway ACC law is a reasonable starting point:
+Your follower needs to turn the relative distance and relative velocity to the leader into a target speed for its own `PurePursuitController`, recomputed every control step. Your implementation should:
 
-```
-desired_gap = min_gap + time_headway * ego_velocity
-gap_error   = actual_gap - desired_gap
-acc_velocity = cruise_velocity
-             + gap_gain * gap_error
-             + relative_speed_gain * (leader_velocity - ego_velocity)
-```
+- converge to a safe, steady cruise speed when the leader is far ahead,
+- close an overly large gap smoothly rather than aggressively,
+- slow down proportionally to how fast the gap is closing, not just how large it currently is,
+- respect `max_velocity` and `max_accel`/`max_decel` bounds so commands don't jump or overshoot.
 
-then clip `acc_velocity` to `[0, max_velocity]`, and rate-limit it against your previous command using `max_accel`/`max_decel` bounds so the vehicle doesn't jerk. Treat `min_gap`, `time_headway`, and the gains as tunable `rx.Parameter`s rather than hardcoded constants.
+Treat the gains and any distance/time thresholds you introduce as tunable `rx.Parameter`s rather than hardcoded constants.
 
 Also think about what should happen if the leader's odometry stops arriving (leader out of view, launch order issue, etc.) — a `leader_timeout` parameter that falls back to a conservative behavior (e.g. stop, or cruise at a low fixed speed) is worth adding before you test on hardware.
 
@@ -65,10 +62,10 @@ Also think about what should happen if the leader's odometry stops arriving (lea
 `svea_examples/scripts/acc_follower.py` is a *starter* file, not a working example — copy it into your own package's `scripts/` folder and fill in the TODOs. The path-following boilerplate (steering via `PurePursuitController`, updating the goal/trajectory) is already filled in, the same as `pure_pursuit.py` from Tutorial 1. What's left for you to implement is the ACC-specific part:
 
 1. **Receive the leader's state independently of your own.** Recall from the namespacing discussion above that `LocalizationInterface` only ever resolves to *your own* vehicle. The starter file has a commented-out `rx.Subscriber` pointed at `leader_odom_topic` — uncomment it, write the callback, and decide what to store from each incoming message (at minimum, the leader's latest position and velocity, and when you last heard from it).
-2. **Implement `compute_acc_velocity`**, currently just a `raise NotImplementedError`, using the control law above.
+2. **Implement `compute_acc_velocity`**, currently just a `raise NotImplementedError`, satisfying the requirements above.
 3. **Wire it into the loop** — the one TODO line in `loop()` already shows where.
 
-The parameters this node exposes (`min_gap`, `time_headway`, the gains, `max_accel`/`max_decel`, `leader_timeout`, `leader_odom_topic`, ...) are already declared for you, so they can be tuned from the launch file without editing the script.
+The starter file already declares the parameters common to any control law (`cruise_velocity`, `max_velocity`, `max_accel`/`max_decel`, `leader_timeout`, `leader_odom_topic`) — add whatever else your specific control law needs (gains, distance/time thresholds, ...) as `rx.Parameter`s alongside them, so everything stays tunable from the launch file without editing the script.
 
 ### Writing the launch file
 
@@ -105,7 +102,7 @@ Test this deliberately: adjust the timing or spacing so the leader clears the li
 1. Run Task 1's `acc.launch.py` and confirm the follower maintains a sensible, non-colliding gap while both vehicles loop.
 2. Run Task 2's version and confirm the leader stops precisely for red/yellow-red and proceeds on green/yellow-green.
 3. Run Task 3's version and confirm the follower independently respects the light, not just the leader's braking.
-4. Try different `time_headway`/gain values and different light positions/timings to make sure your solution isn't overfit to the defaults.
+4. Try different gain/threshold values and different light positions/timings to make sure your solution isn't overfit to the defaults.
 
 ### Real Vehicle Testing
 
