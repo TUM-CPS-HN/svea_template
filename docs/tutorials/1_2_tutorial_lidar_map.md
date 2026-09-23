@@ -54,3 +54,10 @@ python3 src/svea_core/util/obstacles_builder_gui.py
 2. Click **Load map**, click **Add new polygon**, click on the obstacle's corner points, then click **Export** to create the obstacle map.
 
 3. Open `svea_examples/launch/floor2.launch.py` and change `MAP_NAME` at the top of the file. The SVEA will now run using the new map.
+
+## Check Point Coordinates in Foxglove
+
+Right-click the coordinate icon on the right side and select **Publish 2D pose estimate (/initialpose)**. Then select a position and orientation on the map. The selected coordinates and orientation will appear on screen and be published to the `/initialpose` topic.
+
+![Selecting a pose on the map in Foxglove](../media/mark_point_foxglove.png)
+

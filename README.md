@@ -87,21 +87,12 @@ Now you are ready to read through the tutorials! You can find them [here](https:
 
 **Note, you only have to follow this section when running the real cars!**
 
-### Adding the low-level interface
-
-To your roslaunch file, add
-
-```xml
-<!--open serial connection for controlling SVEA-->
-<executable cmd="$(find-pkg-share svea_core)/util/start_micro_ros.sh" output="screen"/>
-```
-
 ### Running localization on the real SVEA
 
-Running the localization amounts to adding `localize.launch` to your project launch:
+To run the floor 2 example on the real SVEA, set `is_sim` to `False`:
 
-```xml
-<include file="$(find svea_localization)/launch/localize.launch"/>
+```bash
+ros2 launch svea_examples floor2.launch.py is_sim:=False
 ```
 
 ### MoCap Localization (Qualisys)
