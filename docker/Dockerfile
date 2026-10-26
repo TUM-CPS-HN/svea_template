@@ -18,6 +18,20 @@ COPY entrypoint ./
 
 RUN apt-get update -y
 
+# Pin MAVROS to 2.14 (from the ROS 2026-06-18 snapshot).
+# MAVROS 2.16 changed the topic namespaces, which breaks lli.xml.
+RUN echo "deb [trusted=yes] http://snapshots.ros.org/$ROSDISTRO/2026-06-18/ubuntu noble main" \
+        > /etc/apt/sources.list.d/ros-snapshot.list && \
+    printf 'Package: ros-%s-mavros* ros-%s-libmavconn ros-%s-mavlink\nPin: origin snapshots.ros.org\nPin-Priority: 1001\n' \
+        $ROSDISTRO $ROSDISTRO $ROSDISTRO > /etc/apt/preferences.d/ros-snapshot-mavros && \
+    apt-get update -y && \
+    apt-get install --no-install-recommends -y --allow-downgrades \
+        ros-$ROSDISTRO-mavros ros-$ROSDISTRO-mavros-extras ros-$ROSDISTRO-mavros-msgs \
+        ros-$ROSDISTRO-libmavconn ros-$ROSDISTRO-mavlink && \
+    apt-mark hold \
+        ros-$ROSDISTRO-mavros ros-$ROSDISTRO-mavros-extras ros-$ROSDISTRO-mavros-msgs \
+        ros-$ROSDISTRO-libmavconn ros-$ROSDISTRO-mavlink
+
 # # You can add extra apt dependencies like this...
 # RUN apt-get install --no-install-recommends -y \
 #         tmux htop
