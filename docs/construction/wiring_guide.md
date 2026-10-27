@@ -34,6 +34,10 @@ Connect the ZED Box power cable to the front side of the PMB as well. Then use a
 
 KTH provides a custom connector cable for the encoders and the ESP32. It splits the power line into three branches and provides two signal lines. For power, use the 3.3V and GND pins on the STM32 board to supply the two encoders and the ESP32. For the signal lines, connect PB6 on the STM32 board to D7 on the ESP32, and PB7 to D6. Between the ESP32 and the encoders, connect the rear right encoder to pin D5 and the rear left encoder to pin D4 on the ESP32.
 
+!!! tip
+
+    Some cables run into the box, so a connector can be pulled loose later without anyone noticing. Once everything is connected, tape the cables to the boards so they stay in place.
+
 ### 5. Battery
 
 Connect the balance lead (the white JST-XH connector) to the PMB, so that the board can monitor the individual cell voltages. Then fit a Deans-T-to-XT60 adapter to the battery's discharge lead and connect that to the PMB as well.

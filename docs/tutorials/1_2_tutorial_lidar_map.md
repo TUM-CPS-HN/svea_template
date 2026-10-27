@@ -36,6 +36,42 @@ Check that the vehicle's position isn't drifting in the transform tree; it's fin
 
 > **Open question:** how to avoid the black noise lines in the map?
 
+#### Troubleshooting
+
+**1. The transform tree is broken and no map appears**
+
+*Symptoms:* the transform tree is missing `self/odom → self/base_link` or `map → self/odom`. The SLAM log keeps printing `Message Filter dropping message ... queue is full`. In `ros2 topic list`, the MAVROS topics appear as `/self/mavros/mavros/...` instead of `/self/mavros/...`.
+
+*Cause:* MAVROS 2.16 changed how plugin topics are namespaced, so `lli.xml` (written for 2.14) now produces `/self/mavros/mavros/...`. The IMU, RC and wheel topics no longer match what the EKF and `wheel_twist` subscribe to, so the EKF never publishes `odom → base_link` and SLAM drops every scan. This happens on any car whose image was built after MAVROS 2.16 was released, even if the code is identical to a working car.
+
+*Fix:* `docker/Dockerfile` now installs MAVROS 2.14 from the ROS 2026-06-18 snapshot and holds it, so `util/build` no longer pulls the latest version. On an affected car:
+```bash
+git pull
+util/build
+```
+Then check the version inside the image:
+```bash
+docker run --rm --network host --entrypoint dpkg svea_template -l | grep "ros-jazzy-mavros "
+```
+It should print `2.14.0-...`. Do not apply the upstream fix that removes `namespace="mavros"` from `lli.xml`; that fix is for MAVROS 2.16 and breaks 2.14.
+
+**2. The map does not update while driving(found on svea2), or the car drifts while standing still**
+
+*Symptoms:* the map is drawn once but does not grow while you drive, or `self/base_link` moves in Foxglove while the car is stationary. `/self/odometry/local` stays at zero or moves on its own.
+
+*Cause:* the wheel encoders are read by an ESP32-C6 peripheral MCU, which forwards them to the PX4 over UART. When the ESP32 boots and sees no encoder pulses, it can fall into **emulation mode** and send synthetic wheel data instead of real readings.
+
+*How to check:* connect the ESP32's USB port to your computer and open its serial monitor (from the [SVEA-PX4-Autopilot-MCU-Peripheral](https://github.com/nilskiefer/SVEA-PX4-Autopilot-MCU-Peripheral) repository, with QGroundControl closed, otherwise it holds the port):
+```bash
+source .venv/bin/activate
+pio device monitor --port /dev/serial/by-id/*Espressif* --baud 115200
+```
+If the log shows `mode=emulation` and `physical_left=0 physical_right=0`, the ESP32 is sending fake data.
+
+*Fix:* with the monitor running, turn a rear wheel by hand. The ESP32 switches to `mode=real` and the counters start to follow the wheels. Then launch SLAM again.
+
+If the log shows `mode=real` but PX4 still receives nothing, check the UART wire between the ESP32 and the PX4 board. In QGroundControl's MAVLink Console, `svea_peripheral_mcu status` should show `bytes` increasing.
+
 3. In another SSH'd terminal, run `util/exec`, then save the map (remember to change `map_name`):
 ```bash
 ros2 run nav2_map_server map_saver_cli -f /svea_ws/src/svea_core/maps/map_name --ros-args -p save_map_timeout:=10.0

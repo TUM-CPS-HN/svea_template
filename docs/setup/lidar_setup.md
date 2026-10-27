@@ -20,9 +20,9 @@ To permanently set a static IP via GUI on **Ubuntu Desktop** (for your Hokuyo Li
 
    | Field     | Value         |
    |-----------|---------------|
-   | Address   | `192.168.3.100` |
+   | Address   | `192.168.0.100` |
    | Netmask   | `255.255.255.0` |
-   | Gateway   | *(optional)* leave blank or set to `192.168.3.1` if using a router |
+   | Gateway   | *(optional)* leave blank or set to `192.168.0.1` if using a router |
 
 4. **DNS**: You can leave it empty or use:  
 ```
@@ -48,12 +48,12 @@ ip a
 ```
 
 Check that your Ethernet interface (e.g.,
-**enp3s0**) now shows **192.168.3.100**.
+**enp3s0**) now shows **192.168.0.100**.
 Then test:
 
 ```bash
-ping 192.168.3.11
-nc -zv 192.168.3.11 10940
+ping 192.168.0.10
+nc -zv 192.168.0.10 10940
 ```
 
 Now your static IP is set permanently and the machine is ready to communicate with the Hokuyo LiDAR.
