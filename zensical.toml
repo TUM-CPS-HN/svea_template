@@ -58,6 +58,7 @@ nav = [
     { "1. Lidar Map" = "tutorials/1_2_tutorial_lidar_map.md" },
     { "2. Eco-Drive" = "tutorials/2_eco_drive.md" },
     { "3. Adaptive Cruise Control" = "tutorials/3_adaptive_cruise_control.md" },
+    { "QGroundControl" = "tutorials/QGroundControl.md" },
     { "The SVEA" = "tutorials/svea_operation.md" },
   ] },
   { "Examples" = [
