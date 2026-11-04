@@ -109,6 +109,11 @@ ros2 run your_package improved_pure_pursuit_node
 When ready to test on the real vehicle:
 
 1. **Prepare the vehicle**: Follow the startup procedure in the SVEA operation tutorial
+   - **First time after powering on the car**, start the low-level interface and arm the car:
+     ```bash
+     ros2 launch svea_core lli.xml
+     ```
+     When you see numbers counting down in the terminal, press the **RST** button on the remote. Without this step, the car will not respond to commands from ROS.
 2. **Launch the hardware interface**:
 ```bash
 # Launch svea
