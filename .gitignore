@@ -22,3 +22,11 @@ __pycache__/
 venv/
 site/
 
+# mine
+.venv/
+build/
+install/
+log/
+my_notes.md
+total_setup.bash
+
