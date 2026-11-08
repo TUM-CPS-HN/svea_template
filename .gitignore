@@ -22,11 +22,10 @@ __pycache__/
 venv/
 site/
 
-# mine
+# Fawzy's stuff
 .venv/
 build/
 install/
 log/
-my_notes.md
 total_setup.bash
-
+notes.md

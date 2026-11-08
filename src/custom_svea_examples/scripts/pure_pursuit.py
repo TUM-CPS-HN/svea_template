@@ -107,7 +107,7 @@ class pure_pursuit(rx.Node):
             1
         )
 
-        # self.safe_zone_pub = self.create_publisher(Marker, '/safe_zone_visual', 10)
+        self.safe_zone_pub = self.create_publisher(Marker, '/safe_zone_visual', 10)
 
     def lidar_callback(self, msg):
             # self.get_logger().info(f"Total points received: {len(msg.ranges)}")
@@ -126,37 +126,37 @@ class pure_pursuit(rx.Node):
                 self.get_logger().info("Safety lock activated.")
                 self.safety_lock = True
 
-            # # --- Draw the Safe Zone in Foxglove ---
-            # marker = Marker()
-            # marker.header.frame_id = msg.header.frame_id # Ties the drawing to the LiDAR's position
-            # marker.header.stamp = self.get_clock().now().to_msg()
-            # marker.ns = 'safe_zone'
-            # marker.id = 0
-            # marker.type = Marker.LINE_STRIP
-            # marker.action = Marker.ADD
+            # --- Draw the Safe Zone in Foxglove ---
+            marker = Marker()
+            marker.header.frame_id = msg.header.frame_id # Ties the drawing to the LiDAR's position
+            marker.header.stamp = self.get_clock().now().to_msg()
+            marker.ns = 'safe_zone'
+            marker.id = 0
+            marker.type = Marker.LINE_STRIP
+            marker.action = Marker.ADD
             
-            # # Set line thickness
-            # marker.scale.x = 0.05 
+            # Set line thickness
+            marker.scale.x = 0.05 
             
-            # # Set color to Yellow (RGBA: 1.0, 1.0, 0.0, 1.0)
-            # marker.color.a = 1.0
-            # marker.color.r = 1.0
-            # marker.color.g = 1.0
-            # marker.color.b = 0.0
+            # Set color to Yellow (RGBA: 1.0, 1.0, 0.0, 1.0)
+            marker.color.a = 1.0
+            marker.color.r = 1.0
+            marker.color.g = 1.0
+            marker.color.b = 0.0
             
-            # # Convert polar arrays (angle, threshold radius) to Cartesian arrays (x, y)
-            # x_coords = thresholds * np.cos(angles)
-            # y_coords = thresholds * np.sin(angles)
+            # Convert polar arrays (angle, threshold radius) to Cartesian arrays (x, y)
+            x_coords = thresholds * np.cos(angles)
+            y_coords = thresholds * np.sin(angles)
             
-            # # Populate the marker points
-            # for x, y in zip(x_coords, y_coords):
-            #     pt = Point()
-            #     pt.x = float(x)
-            #     pt.y = float(y)
-            #     pt.z = 0.0
-            #     marker.points.append(pt)
+            # Populate the marker points
+            for x, y in zip(x_coords, y_coords):
+                pt = Point()
+                pt.x = float(x)
+                pt.y = float(y)
+                pt.z = 0.0
+                marker.points.append(pt)
                 
-            # self.safe_zone_pub.publish(marker)
+            self.safe_zone_pub.publish(marker)
 
     def loop(self):
         """

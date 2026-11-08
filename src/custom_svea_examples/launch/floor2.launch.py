@@ -17,7 +17,7 @@ def main(
     if not is_sim:
 
         # Start SVEA in real-world mode
-        bl.include("custom_svea_core", "svea.launch.py",
+        bl.include("custom_svea_core", "svea_tum.launch.py",
                    is_sim=is_sim, # = False
                    map_name=MAP_NAME,
                    initial_pose_x=initial_pose_x,
@@ -43,7 +43,7 @@ def main(
 
         for name, (init_x, init_y, init_a) in INITIAL_POSES.items():
             
-            bl.include("custom_svea_core", "svea.launch.py",
+            bl.include("custom_svea_core", "svea_tum.launch.py",
                        name=name,
                        is_sim=is_sim,
                        is_indoor=True,
