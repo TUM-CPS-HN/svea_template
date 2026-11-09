@@ -99,7 +99,7 @@ class pure_pursuit(rx.Node):
 
         self.scan_subscriber = self.create_subscription(
             LaserScan,
-            '/svea_a/scan',
+            f'/{"svea_a" if self.is_sim else "self"}/scan',
             self.lidar_callback,
             1
         )
@@ -193,11 +193,11 @@ class pure_pursuit(rx.Node):
         x, y, yaw, vel = state
 
         if self.controller.is_finished:
-            self.get_logger().info("Goal reached. Waiting for new goal...")
+            self.get_logger().info(f"Goal reached. x: {x}, y: {y}, yaw: {yaw}")
             return
 
         steering, velocity = self.controller.compute_control(state)
-        self.get_logger().info(f"Steering: {steering}, Velocity: {velocity}")
+        self.get_logger().info(f"x: {x}, y: {y}, yaw: {yaw}, vel: {vel}, str_cmd: {steering}, vel_cmd: {velocity}")
         if self.safety_lock:
             steering = 0.0
             velocity = 0.0

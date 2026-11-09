@@ -54,7 +54,7 @@ class pure_pursuit(rx.Node):
     TRAJ_LEN = 20
 
     points = rx.Parameter([-2.3, -7.1, 10.5, 11.7, 5.7, 15.0, -7.0, -4.0])
-    target_velocity = rx.Parameter(1.4)
+    target_velocity = rx.Parameter(0.5)
     is_sim = rx.Parameter(True)
     
     # Interfaces
@@ -102,7 +102,7 @@ class pure_pursuit(rx.Node):
 
         self.scan_subscriber = self.create_subscription(
             LaserScan,
-            '/svea_a/scan',
+            f'/{"svea_a" if self.is_sim else "self"}/scan',
             self.lidar_callback,
             1
         )
@@ -176,7 +176,7 @@ class pure_pursuit(rx.Node):
             self.update_traj(prev_goal[0], prev_goal[1])
 
         steering, velocity = self.controller.compute_control(state)
-        self.get_logger().info(f"Steering: {steering}, Velocity: {velocity}")
+        self.get_logger().info(f"x: {x}, y: {y}, yaw: {yaw}, vel: {vel}, str_cmd: {steering}, vel_cmd: {velocity}")
         if self.safety_lock:
             steering = 0.0
             velocity = 0.0
