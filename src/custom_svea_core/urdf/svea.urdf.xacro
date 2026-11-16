@@ -171,5 +171,33 @@
     <child link="${ns}zed_box"/>
     <origin xyz="0.22 0.01 0.037"/>
   </joint>
+
+  <link name="${ns}front_axle"/>
+  <joint name="${ns}base_to_front_axle" type="fixed">
+    <parent link="${ns}base_link"/>
+    <child link="${ns}front_axle"/>
+    <origin xyz="0.19 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="${ns}rear_axle"/>
+  <joint name="${ns}base_to_rear_axle" type="fixed">
+    <parent link="${ns}base_link"/>
+    <child link="${ns}rear_axle"/>
+    <origin xyz="-0.15 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="${ns}front_safety_circle_center"/>
+  <joint name="${ns}base_to_front_safety_circle_center" type="fixed">
+    <parent link="${ns}base_link"/>
+    <child link="${ns}front_safety_circle_center"/>
+    <origin xyz="0.34 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="${ns}rear_safety_circle_center"/>
+  <joint name="${ns}base_to_rear_safety_circle_center" type="fixed">
+    <parent link="${ns}base_link"/>
+    <child link="${ns}rear_safety_circle_center"/>
+    <origin xyz="-0.15 0 0" rpy="0 0 0"/>
+  </joint>
   
 </robot>
