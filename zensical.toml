@@ -57,6 +57,7 @@ nav = [
     { "1. Path-Tracking and Pure-Pursuit" = "tutorials/1_1_path_tracking.md" },
     { "1. Lidar Map" = "tutorials/1_2_tutorial_lidar_map.md" },
     { "2. Eco-Drive" = "tutorials/2_eco_drive.md" },
+    { "2. Eco-Drive: Our Solution" = "tutorials/2_eco_drive_solution.md" },
     { "3. Adaptive Cruise Control" = "tutorials/3_adaptive_cruise_control.md" },
     { "QGroundControl" = "tutorials/QGroundControl.md" },
     { "The SVEA" = "tutorials/svea_operation.md" },

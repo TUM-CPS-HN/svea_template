@@ -1,0 +1,282 @@
+{
+ "configById": {
+  "3D!eco": {
+   "layers": {
+    "eco-grid": {
+     "visible": true,
+     "frameLocked": true,
+     "label": "Grid",
+     "instanceId": "eco-grid",
+     "layerId": "foxglove.Grid",
+     "size": 30,
+     "divisions": 30,
+     "lineWidth": 1,
+     "color": "#248eff40",
+     "position": [
+      0,
+      0,
+      0
+     ],
+     "rotation": [
+      0,
+      0,
+      0
+     ],
+     "order": 1
+    }
+   },
+   "followMode": "follow-pose",
+   "followTf": "map",
+   "topics": {
+    "/map": {
+     "visible": true
+    },
+    "/svea_a/eco_drive/viz": {
+     "visible": true
+    },
+    "/svea_a/past_path": {
+     "visible": true,
+     "lineWidth": 0.04,
+     "gradient": [
+      "#3333ff40",
+      "#3333ffff"
+     ]
+    },
+    "/svea_a/path_plan": {
+     "visible": true,
+     "lineWidth": 0.03,
+     "gradient": [
+      "#ffffff40",
+      "#ffffff80"
+     ]
+    },
+    "/safe_zone_visual": {
+     "visible": true
+    },
+    "/light_a/light_marker": {
+     "visible": true
+    },
+    "/light_b/light_marker": {
+     "visible": true
+    },
+    "/light_c/light_marker": {
+     "visible": true
+    },
+    "/light_d/light_marker": {
+     "visible": true
+    }
+   },
+   "cameraState": {
+    "perspective": false,
+    "distance": 30,
+    "phi": 0,
+    "thetaOffset": 90,
+    "targetOffset": [
+     8,
+     5,
+     0
+    ],
+    "target": [
+     0,
+     0,
+     0
+    ],
+    "targetOrientation": [
+     0,
+     0,
+     0,
+     1
+    ],
+    "fovy": 45,
+    "near": 0.5,
+    "far": 5000
+   },
+   "scene": {
+    "enableStats": false
+   },
+   "foxglovePanelTitle": "Map, plan (colour = speed), ghost car, stop lines"
+  },
+  "Indicator!light_a": {
+   "path": "/light_a/state.data",
+   "style": "background",
+   "fallbackColor": "#808080",
+   "fallbackLabel": "no signal",
+   "rules": [
+    {
+     "operator": "=",
+     "rawValue": "Gr",
+     "color": "#2ca02c",
+     "label": "GREEN"
+    },
+    {
+     "operator": "=",
+     "rawValue": "Rd",
+     "color": "#d62728",
+     "label": "RED"
+    },
+    {
+     "operator": "=",
+     "rawValue": "YG",
+     "color": "#f2b400",
+     "label": "YELLOW \u2192 green"
+    },
+    {
+     "operator": "=",
+     "rawValue": "YR",
+     "color": "#f2b400",
+     "label": "YELLOW \u2192 red"
+    }
+   ],
+   "foxglovePanelTitle": "light_a"
+  },
+  "RawMessages!status": {
+   "topicPath": "/svea_a/eco_drive/status.data",
+   "diffEnabled": false,
+   "diffMethod": "custom",
+   "diffTopicPath": "",
+   "showFullMessageForDiff": false,
+   "foxglovePanelTitle": "Planner status"
+  },
+  "Plot!speed": {
+   "paths": [
+    {
+     "value": "/svea_a/eco_drive/telemetry/v_plan.data",
+     "enabled": true,
+     "timestampMethod": "receiveTime",
+     "label": "planned v"
+    },
+    {
+     "value": "/svea_a/eco_drive/telemetry/v_meas.data",
+     "enabled": true,
+     "timestampMethod": "receiveTime",
+     "label": "measured v"
+    },
+    {
+     "value": "/svea_a/eco_drive/telemetry/v_cmd.data",
+     "enabled": true,
+     "timestampMethod": "receiveTime",
+     "label": "command"
+    },
+    {
+     "value": "/svea_a/eco_drive/telemetry/guard.data",
+     "enabled": true,
+     "timestampMethod": "receiveTime",
+     "label": "guard active"
+    }
+   ],
+   "minYValue": 0,
+   "maxYValue": 1.4,
+   "showLegend": true,
+   "legendDisplay": "floating",
+   "showPlotValuesInLegend": false,
+   "isSynced": true,
+   "xAxisVal": "timestamp",
+   "followingViewWidth": 30,
+   "foxglovePanelTitle": "Speed [m/s]"
+  },
+  "Plot!progress": {
+   "paths": [
+    {
+     "value": "/svea_a/eco_drive/telemetry/s_plan.data",
+     "enabled": true,
+     "timestampMethod": "receiveTime",
+     "label": "s planned"
+    },
+    {
+     "value": "/svea_a/eco_drive/telemetry/s.data",
+     "enabled": true,
+     "timestampMethod": "receiveTime",
+     "label": "s measured"
+    }
+   ],
+   "showLegend": true,
+   "legendDisplay": "floating",
+   "isSynced": true,
+   "xAxisVal": "timestamp",
+   "followingViewWidth": 30,
+   "foxglovePanelTitle": "Progress s(t) [m]  (compare with the light timeline below)",
+   "showPlotValuesInLegend": false
+  },
+  "StateTransitions!lights": {
+   "paths": [
+    {
+     "value": "/light_a/state.data",
+     "timestampMethod": "receiveTime",
+     "label": "light_a"
+    },
+    {
+     "value": "/light_b/state.data",
+     "timestampMethod": "receiveTime",
+     "label": "light_b"
+    },
+    {
+     "value": "/light_c/state.data",
+     "timestampMethod": "receiveTime",
+     "label": "light_c"
+    },
+    {
+     "value": "/light_d/state.data",
+     "timestampMethod": "receiveTime",
+     "label": "light_d"
+    }
+   ],
+   "isSynced": true,
+   "xAxisMinValue": null,
+   "xAxisMaxValue": null,
+   "foxglovePanelTitle": "Light timeline"
+  },
+  "Plot!energy": {
+   "paths": [
+    {
+     "value": "/svea_a/eco_drive/telemetry/energy_J.data",
+     "enabled": true,
+     "timestampMethod": "receiveTime",
+     "label": "battery model [J]"
+    }
+   ],
+   "showLegend": true,
+   "legendDisplay": "floating",
+   "isSynced": true,
+   "xAxisVal": "timestamp",
+   "followingViewWidth": 30,
+   "foxglovePanelTitle": "Battery energy used (model) [J]",
+   "showPlotValuesInLegend": false
+  }
+ },
+ "globalVariables": {},
+ "userNodes": {},
+ "playbackConfig": {
+  "speed": 1
+ },
+ "layout": {
+  "direction": "row",
+  "splitPercentage": 55,
+  "first": "3D!eco",
+  "second": {
+   "direction": "column",
+   "splitPercentage": 12,
+   "first": {
+    "direction": "row",
+    "first": "Indicator!light_a",
+    "second": "RawMessages!status",
+    "splitPercentage": 28
+   },
+   "second": {
+    "direction": "column",
+    "splitPercentage": 34,
+    "first": "Plot!speed",
+    "second": {
+     "direction": "column",
+     "splitPercentage": 33,
+     "first": "Plot!progress",
+     "second": {
+      "direction": "column",
+      "splitPercentage": 55,
+      "first": "StateTransitions!lights",
+      "second": "Plot!energy"
+     }
+    }
+   }
+  }
+ }
+}
