@@ -52,6 +52,7 @@ class pure_pursuit(rx.Node):
 
     DELTA_TIME = 0.1  # units?? I guess seconds.
     TRAJ_LEN = 20
+    WAYPOINT_SWITCH_DISTANCE = 0.55  # [m] remaining along the active leg
 
     points = rx.Parameter([-2.3, -7.1, 10.5, 11.7, 5.7, 15.0, -7.0, -4.0])
     target_velocity = rx.Parameter(0.5)
@@ -66,29 +67,17 @@ class pure_pursuit(rx.Node):
     path = ShowPath() # for path visualization
 
     def on_startup(self):
-        """
-        Initialize the Pure Pursuit controller and set up the path and goal.
-        Controller is initialized with the target velocity and the points
-        provided in the parameters. The current state is obtained from the
-        localization interface, and the goal is set to the first point in the
-        path.
-        The trajectory is updated based on the current state and the goal.
-        The controller is set to not finished initially, and a timer is created
-        to call the loop method at regular intervals.
-        """
+        """Set up the controller and wait for the first localized position."""
         # Convert parameter to numerical list
         self._points = np.array(self.points).reshape(-1, 2).tolist()
 
         self.controller = PurePursuitController()
         self.controller.target_velocity = self.target_velocity
 
-        state = self.localizer.get_state()
-        x, y, yaw, vel = state
-
         self.curr = 0
         self.goal = self._points[self.curr]
-        self.goal_marker.place([*self.goal, 0.5], color='blue')
-        self.update_traj(x, y)
+        self.segment_start = None
+        self.localizer.add_callback(self.initialize_route)
         self.actuation.enable_difflock() 
 
         self.create_timer(self.DELTA_TIME, self.loop)
@@ -108,6 +97,12 @@ class pure_pursuit(rx.Node):
         )
 
         self.safe_zone_pub = self.create_publisher(Marker, '/safe_zone_visual', 10)
+
+    def initialize_route(self, odometry):
+        if self.segment_start is None:
+            x, y, _, _ = self.localizer.get_state(odometry)
+            self.goal_marker.place([*self.goal, 0.5], color='blue')
+            self.update_traj(x, y)
 
     def lidar_callback(self, msg):
             # self.get_logger().info(f"Total points received: {len(msg.ranges)}")
@@ -159,23 +154,31 @@ class pure_pursuit(rx.Node):
             self.safe_zone_pub.publish(marker)
 
     def loop(self):
-        """
-        Main loop of the Pure Pursuit controller. It retrieves the current state
-        from the localization interface, computes the steering and velocity
-        commands using the controller, and sends these commands to the actuation
-        interface.
-        If the controller has finished following the path, it updates the goal
-        and trajectory based on the next point in the path.
-        """
+        """Track a continuous target on the active waypoint leg."""
+        if self.segment_start is None:
+            return
+
         state = self.localizer.get_state()
         x, y, yaw, vel = state
+        position = np.array([x, y])
+        progress = self.progress_along_segment(position)
 
-        if self.controller.is_finished:
+        # Use distance along the route so the spacing of the visualization
+        # points cannot affect where the vehicle starts turning.
+        switch_distance = min(self.WAYPOINT_SWITCH_DISTANCE, self.segment_length / 2)
+        if self.segment_length - progress <= switch_distance:
             prev_goal = self.goal
             self.update_goal()
-            self.update_traj(prev_goal[0], prev_goal[1])
+            self.update_traj(*prev_goal)
+            progress = self.progress_along_segment(position)
 
-        steering, velocity = self.controller.compute_control(state)
+        if self.segment_length == 0.0:
+            steering, velocity = 0.0, 0.0
+        else:
+            lookahead = self.controller.Lfc + self.controller.k * vel
+            target_distance = min(progress + lookahead, self.segment_length)
+            target = self.segment_start + target_distance * self.segment_direction
+            steering, velocity = self.controller.compute_control(state, target=target)
         self.get_logger().info(f"x: {x}, y: {y}, yaw: {yaw}, vel: {vel}, str_cmd: {steering}, vel_cmd: {velocity}")
         if self.safety_lock:
             steering = 0.0
@@ -194,22 +197,25 @@ class pure_pursuit(rx.Node):
         self.curr += 1
         self.curr %= len(self._points)
         self.goal = self._points[self.curr]
-        self.controller.is_finished = False
-        # Mark the goal
         self.goal_marker.place([*self.goal, 0.5], color='blue')
 
+    def progress_along_segment(self, position):
+        return max(0.0, float((position - self.segment_start) @ self.segment_direction))
+
     def update_traj(self, x, y):
-        """
-        Update the trajectory based on the current state and the goal. It
-        generates a linear trajectory from the current position to the goal
-        position, and updates the controller's trajectory points.
-        The trajectory is visualized using the ShowPath interface.
-        """
+        """Set the active leg and publish samples of it for visualization."""
+        start = np.array([x, y])
+        displacement = np.asarray(self.goal) - start
+        self.segment_length = float(np.linalg.norm(displacement))
+        self.segment_direction = displacement
+        if self.segment_length:
+            self.segment_direction = displacement / self.segment_length
+        self.segment_start = start
+
         xs = np.linspace(x, self.goal[0], self.TRAJ_LEN)
         ys = np.linspace(y, self.goal[1], self.TRAJ_LEN)
-        self.controller.traj_x = xs
-        self.controller.traj_y = ys
-        self.path.publish_path(xs,ys)
+        self.path.publish_path(xs, ys)
+
 
 if __name__ == '__main__':
     pure_pursuit.main()
