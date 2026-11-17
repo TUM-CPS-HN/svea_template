@@ -17,19 +17,19 @@ class MPCParkingController:
         # TODO: Can we put a time limit on the solve?
         self.dt = ca.DM(0.4)
 
-        # we convert to dense matrix to allow symbolic operations.
-        # We should increase the weight on the orientation error to ensure the vehicle aligns with the wall.
-        self.Q1 = ca.DM([
-            [4.0, 0.0, 0.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 17.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0]
-        ])
+        # # we convert to dense matrix to allow symbolic operations.
+        # # We should increase the weight on the orientation error to ensure the vehicle aligns with the wall.
+        # self.Q1 = ca.DM([
+        #     [4.0, 0.0, 0.0, 0.0, 0.0],
+        #     [0.0, 1.0, 0.0, 0.0, 0.0],
+        #     [0.0, 0.0, 17.0, 0.0, 0.0],
+        #     [0.0, 0.0, 0.0, 0.0, 0.0],
+        #     [0.0, 0.0, 0.0, 0.0, 0.0]
+        # ])
 
-        self.w4 = 5
+        self.w4 = 10
         self.w5 = 2
-        self.w6 = 5
+        self.w6 = 10
         self.w1 = self.N * self.w4 # so that the cost of the final state is always more important than ALL intermediate ones.
         self.w2 = self.N * self.w5
         self.w3 = self.N * self.w6
@@ -46,8 +46,8 @@ class MPCParkingController:
         self.min_velocity = -0.4
         self.max_velocity = 0.0
 
-        self.min_acceleration = -0.2
-        self.max_acceleration = 0.2
+        self.min_acceleration = -0.5
+        self.max_acceleration = 0.5
 
         # Wheelbase of the vehicle (unit [m]).
         self.L = ca.DM(0.34)
@@ -194,7 +194,7 @@ class MPCParkingController:
             # Removing these was right, they made the car go in wrong directions, and the first one is sufficient to make the car go faster
             # self.objective += self.w5 * (self.wall_line[0] * self.x[0, k] + self.wall_line[1] * self.x[1, k] + self.wall_line[2])**2 / (self.wall_line[0]**2 + self.wall_line[1]**2 + 1e-6) # think about removing this.
             # self.objective += self.w6 * (self.x[2, k] - self.x_target[2])**2 
-            # self.objective += self.w7 * self.u[0, k]**2 + self.w8 * self.u[1, k]**2 # to stop the car from jittering when it reaches the goal. I think I will simply replace this by a stopping condition at the main script.
+            self.objective += self.w7 * self.u[0, k]**2 + self.w8 * self.u[1, k]**2 # to stop the car from jittering when it reaches the goal. I think I will simply replace this by a stopping condition at the main script.
 
         # Specify type of optimization problem
         self.opti.minimize(self.objective)
